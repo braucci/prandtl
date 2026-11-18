@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="it" data-theme="ember">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F8F9FA">
+  <meta name="description" content="Il laboratorio di aerodinamica del prof. B. Raucci: dal profilo 2D all’ala 3D, composizione delle velocità, vortici di estremità e resistenza indotta.">
+  <meta name="author" content="prof. B. Raucci">
+  <title>VORTICE — prof. B. Raucci</title>
+  <script>try{const t=localStorage.getItem('vortice-theme');if(['ember','forest','cobalt','slate','night'].includes(t)){document.documentElement.dataset.theme=t;document.documentElement.style.colorScheme=['slate','night'].includes(t)?'dark':'light';}}catch{}</script>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+  <link rel="preload" href="./assets/fonts/space-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./assets/fonts/jetbrains-mono-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./fonts.css">
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./transition.css">
+  <link rel="stylesheet" href="./gesture.css">
+  <link rel="stylesheet" href="./pressure.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+</head>
+<body>
+  <a class="skip-link" href="#controls-panel">Vai ai controlli</a>
+  <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-arrow" viewBox="0 0 256 256"><path d="M216,128l-72,72V56Z" opacity="0.2"/><path d="M221.66,122.34l-72-72A8,8,0,0,0,136,56v64H40a8,8,0,0,0,0,16h96v64a8,8,0,0,0,13.66,5.66l72-72A8,8,0,0,0,221.66,122.34ZM152,180.69V75.31L204.69,128Z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 256 256"><path d="M228.23,134.69,84.15,222.81A8,8,0,0,1,72,216.12V39.88a8,8,0,0,1,12.15-6.69l144.08,88.12A7.82,7.82,0,0,1,228.23,134.69Z" opacity="0.2"/><path d="M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 256 256"><path d="M208,48V208a8,8,0,0,1-8,8H160a8,8,0,0,1-8-8V48a8,8,0,0,1,8-8h40A8,8,0,0,1,208,48ZM96,40H56a8,8,0,0,0-8,8V208a8,8,0,0,0,8,8H96a8,8,0,0,0,8-8V48A8,8,0,0,0,96,40Z" opacity="0.2"/><path d="M200,32H160a16,16,0,0,0-16,16V208a16,16,0,0,0,16,16h40a16,16,0,0,0,16-16V48A16,16,0,0,0,200,32Zm0,176H160V48h40ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Zm0,176H56V48H96Z"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 256 256"><path d="M216,128a88,88,0,1,1-88-88A88,88,0,0,1,216,128Z" opacity="0.2"/><path d="M224,128a96,96,0,0,1-94.71,96H128A95.38,95.38,0,0,1,62.1,197.8a8,8,0,0,1,11-11.63A80,80,0,1,0,71.43,71.39a3.07,3.07,0,0,1-.26.25L44.59,96H72a8,8,0,0,1,0,16H24a8,8,0,0,1-8-8V56a8,8,0,0,1,16,0V85.8L60.25,60A96,96,0,0,1,224,128Z"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 256 256"><path d="M208,48V208H48V48Z" opacity="0.2"/><path d="M216,48V88a8,8,0,0,1-16,0V56H168a8,8,0,0,1,0-16h40A8,8,0,0,1,216,48ZM88,200H56V168a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H88a8,8,0,0,0,0-16Zm120-40a8,8,0,0,0-8,8v32H168a8,8,0,0,0,0,16h40a8,8,0,0,0,8-8V168A8,8,0,0,0,208,160ZM88,40H48a8,8,0,0,0-8,8V88a8,8,0,0,0,16,0V56H88a8,8,0,0,0,0-16Z"/></symbol>
+    <symbol id="i-info" viewBox="0 0 256 256"><path d="M224,128a96,96,0,1,1-96-96A96,96,0,0,1,224,128Z" opacity="0.2"/><path d="M144,176a8,8,0,0,1-8,8,16,16,0,0,1-16-16V128a8,8,0,0,1,0-16,16,16,0,0,1,16,16v40A8,8,0,0,1,144,176Zm88-48A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128ZM124,96a12,12,0,1,0-12-12A12,12,0,0,0,124,96Z"/></symbol>
+    <symbol id="i-close" viewBox="0 0 256 256"><path d="M216,56V200a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V56A16,16,0,0,1,56,40H200A16,16,0,0,1,216,56Z" opacity="0.2"/><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 256 256"><path d="M128,80a24,24,0,1,1-24-24A24,24,0,0,1,128,80Zm40,72a24,24,0,1,0,24,24A24,24,0,0,0,168,152Z" opacity="0.2"/><path d="M40,88H73a32,32,0,0,0,62,0h81a8,8,0,0,0,0-16H135a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16Zm64-24A16,16,0,1,1,88,80,16,16,0,0,1,104,64ZM216,168H199a32,32,0,0,0-62,0H40a8,8,0,0,0,0,16h97a32,32,0,0,0,62,0h17a8,8,0,0,0,0-16Zm-48,24a16,16,0,1,1,16-16A16,16,0,0,1,168,192Z"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 256 256"><path d="M224,80l-96,56L32,80l96-56Z" opacity="0.2"/><path d="M230.91,172A8,8,0,0,1,228,182.91l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,36,169.09l92,53.65,92-53.65A8,8,0,0,1,230.91,172ZM220,121.09l-92,53.65L36,121.09A8,8,0,0,0,28,134.91l96,56a8,8,0,0,0,8.06,0l96-56A8,8,0,1,0,220,121.09ZM24,80a8,8,0,0,1,4-6.91l96-56a8,8,0,0,1,8.06,0l96,56a8,8,0,0,1,0,13.82l-96,56a8,8,0,0,1-8.06,0l-96-56A8,8,0,0,1,24,80Zm23.88,0L128,126.74,208.12,80,128,33.26Z"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 256 256"><path d="M128,56C48,56,16,128,16,128s32,72,112,72,112-72,112-72S208,56,128,56Zm0,112a40,40,0,1,1,40-40A40,40,0,0,1,128,168Z" opacity="0.2"/><path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 256 256"><path d="M80,88v80H32a8,8,0,0,1-8-8V96a8,8,0,0,1,8-8Z" opacity="0.2"/><path d="M155.51,24.81a8,8,0,0,0-8.42.88L77.25,80H32A16,16,0,0,0,16,96v64a16,16,0,0,0,16,16H77.25l69.84,54.31A8,8,0,0,0,160,224V32A8,8,0,0,0,155.51,24.81ZM32,96H72v64H32ZM144,207.64,88,164.09V91.91l56-43.55Zm54-106.08a40,40,0,0,1,0,52.88,8,8,0,0,1-12-10.58,24,24,0,0,0,0-31.72,8,8,0,0,1,12-10.58ZM248,128a79.9,79.9,0,0,1-20.37,53.34,8,8,0,0,1-11.92-10.67,64,64,0,0,0,0-85.33,8,8,0,1,1,11.92-10.67A79.83,79.83,0,0,1,248,128Z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 256 256"><path d="M232,56V200H160a32,32,0,0,0-32,32,32,32,0,0,0-32-32H24V56H96a32,32,0,0,1,32,32,32,32,0,0,1,32-32Z" opacity="0.2"/><path d="M232,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H24a8,8,0,0,0-8,8V200a8,8,0,0,0,8,8H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h72a8,8,0,0,0,8-8V56A8,8,0,0,0,232,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 256 256"><path d="M224,127.17a96.48,96.48,0,0,1-2.39,22.18A24,24,0,0,1,198.21,168H152a24,24,0,0,0-24,24,24,24,0,0,1-32,22.61C58.73,201.44,32,169.81,32,128a96,96,0,0,1,95-96C179.84,31.47,223.55,74.35,224,127.17Z" opacity="0.2"/><path d="M200.77,53.89A103.27,103.27,0,0,0,128,24h-1.07A104,104,0,0,0,24,128c0,43,26.58,79.06,69.36,94.17A32,32,0,0,0,136,192a16,16,0,0,1,16-16h46.21a31.81,31.81,0,0,0,31.2-24.88,104.43,104.43,0,0,0,2.59-24A103.28,103.28,0,0,0,200.77,53.89Zm13,93.71A15.89,15.89,0,0,1,198.21,160H152a32,32,0,0,0-32,32,16,16,0,0,1-21.31,15.07C62.49,194.3,40,164,40,128a88,88,0,0,1,87.09-88h.9a88.35,88.35,0,0,1,88,87.25A88.86,88.86,0,0,1,213.81,147.6ZM140,76a12,12,0,1,1-12-12A12,12,0,0,1,140,76ZM96,100A12,12,0,1,1,84,88,12,12,0,0,1,96,100Zm0,56a12,12,0,1,1-12-12A12,12,0,0,1,96,156Zm88-56a12,12,0,1,1-12-12A12,12,0,0,1,184,100Z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 256 256"><path d="M232,56V200a16,16,0,0,1-16,16H40a16,16,0,0,1-16-16V56A16,16,0,0,1,40,40H216A16,16,0,0,1,232,56Z" opacity="0.2"/><path d="M205.66,85.66l-96,96a8,8,0,0,1-11.32,0l-40-40a8,8,0,0,1,11.32-11.32L104,164.69l90.34-90.35a8,8,0,0,1,11.32,11.32Z"/></symbol>
+    <symbol id="i-wind" viewBox="0 0 256 256"><path d="M120,96a24,24,0,1,1,24-24A24,24,0,0,1,120,96Zm88-16a24,24,0,1,0,24,24A24,24,0,0,0,208,80Zm-56,80a24,24,0,1,0,24,24A24,24,0,0,0,152,160Z" opacity="0.2"/><path d="M184,184a32,32,0,0,1-32,32c-13.7,0-26.95-8.93-31.5-21.22a8,8,0,0,1,15-5.56C137.74,195.27,145,200,152,200a16,16,0,0,0,0-32H40a8,8,0,0,1,0-16H152A32,32,0,0,1,184,184Zm-64-80a32,32,0,0,0,0-64c-13.7,0-26.95,8.93-31.5,21.22a8,8,0,0,0,15,5.56C105.74,60.73,113,56,120,56a16,16,0,0,1,0,32H24a8,8,0,0,0,0,16Zm88-32c-13.7,0-26.95,8.93-31.5,21.22a8,8,0,0,0,15,5.56C193.74,92.73,201,88,208,88a16,16,0,0,1,0,32H32a8,8,0,0,0,0,16H208a32,32,0,0,0,0-64Z"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 256 256"><path d="M128,129.09V232a8,8,0,0,1-3.84-1l-88-48.16a8,8,0,0,1-4.16-7V80.2a8,8,0,0,1,.7-3.27Z" opacity="0.2"/><path d="M223.68,66.15,135.68,18h0a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32h0l80.34,44L128,120,47.66,76ZM40,90l80,43.78v85.79L40,175.82Zm96,129.57V133.82L216,90v85.78Z"/></symbol>
+    <symbol id="i-moon-stars" viewBox="0 0 256 256"><path d="M210.69,158.18A88,88,0,1,1,97.82,45.31,96.08,96.08,0,0,0,192,160,96.78,96.78,0,0,0,210.69,158.18Z" opacity="0.2"/><path d="M240,96a8,8,0,0,1-8,8H216v16a8,8,0,0,1-16,0V104H184a8,8,0,0,1,0-16h16V72a8,8,0,0,1,16,0V88h16A8,8,0,0,1,240,96ZM144,56h8v8a8,8,0,0,0,16,0V56h8a8,8,0,0,0,0-16h-8V32a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16Zm72.77,97a8,8,0,0,1,1.43,8A96,96,0,1,1,95.07,37.8a8,8,0,0,1,10.6,9.06A88.07,88.07,0,0,0,209.14,150.33,8,8,0,0,1,216.77,153Zm-19.39,14.88c-1.79.09-3.59.14-5.38.14A104.11,104.11,0,0,1,88,64c0-1.79,0-3.59.14-5.38A80,80,0,1,0,197.38,167.86Z"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 256 256"><path d="M208,116v36a80,80,0,0,1-160,0V76a20,20,0,0,1,40,0V44a20,20,0,0,1,40,0V60a20,20,0,0,1,40,0v56a20,20,0,0,1,40,0Z" opacity="0.2"/><path d="M188,88a27.75,27.75,0,0,0-12,2.71V60a28,28,0,0,0-41.36-24.6A28,28,0,0,0,80,44v6.71A27.75,27.75,0,0,0,68,48,28,28,0,0,0,40,76v76a88,88,0,0,0,176,0V116A28,28,0,0,0,188,88Zm12,64a72,72,0,0,1-144,0V76a12,12,0,0,1,24,0v44a8,8,0,0,0,16,0V44a12,12,0,0,1,24,0v68a8,8,0,0,0,16,0V60a12,12,0,0,1,24,0v68.67A48.08,48.08,0,0,0,120,176a8,8,0,0,0,16,0,32,32,0,0,1,32-32,8,8,0,0,0,8-8V116a12,12,0,0,1,24,0Z"/></symbol>
+  </defs></svg>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Vortice, laboratorio di aerodinamica"><svg class="brand-mark" viewBox="0 0 64 64" width="38" height="38" aria-hidden="true" style="color:var(--accent)"><rect x="1" y="1" width="62" height="62" rx="18" fill="var(--accent-soft)"/><g fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"><path d="M52 23C40 6 12 13 12 32s28 26 40 9"/><path d="M45 25c-8-10-24-6-24 7s16 17 24 7"/><path d="M37 29c-4-3-8-1-8 3s4 6 8 3"/></g></svg><span>VORTICE<span class="brand-dot">.</span></span></a>
+    <div class="header-divider"></div><span class="header-context author-signature">prof. B. Raucci</span>
+    <div class="workspace-switch" role="group" aria-label="Laboratorio da esplorare"><button id="mode-wake" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-wind"/></svg>Scia vorticosa</button><button id="mode-transition" class="active" aria-pressed="true"><svg class="icon" aria-hidden="true"><use href="#i-cube"/></svg>Dal 2D al 3D</button></div>
+    <nav class="topnav" aria-label="Informazioni"><button class="text-button" id="physics-open">La fisica <span><svg class="icon inline-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></span></button><button class="text-button" id="help-open">Come esplorare</button></nav>
+    <button class="gesture-button" id="gesture-open" aria-haspopup="dialog" aria-controls="gesture-dialog" title="Controlla il laboratorio con le mani"><svg class="icon" aria-hidden="true"><use href="#i-hand"/></svg><span>Gesture</span></button>
+    <button class="appearance-button" id="appearance-open" aria-haspopup="dialog" aria-controls="appearance-dialog" title="Personalizza l’aspetto"><svg class="icon" aria-hidden="true"><use href="#i-palette"/></svg><span>Aspetto</span></button>
+    <button class="lesson-button" id="lesson-mode"><svg class="icon"><use href="#i-expand"/></svg><span>Modalità lezione</span></button>
+  </header>
+  <main class="transition-lab" id="transition-lab" aria-label="Dal profilo bidimensionale all’ala tridimensionale"></main>
+  <main class="lab-layout" id="lab" hidden>
+    <nav class="chapter-rail" aria-label="Percorso didattico">
+      <div class="rail-label">IL PERCORSO</div>
+      <button data-stage="0" aria-label="Fase 1: pressione" title="La differenza di pressione"><span>01</span><small>Pressione</small></button>
+      <div class="rail-line"></div>
+      <button data-stage="1" aria-label="Fase 2: scia vorticosa" title="La scia vorticosa"><span>02</span><small>Scia</small></button>
+      <div class="rail-line"></div>
+      <button data-stage="2" aria-label="Fase 3: vortici" title="L’avvolgimento dei vortici" class="active" aria-current="step"><span>03</span><small>Vortici</small></button>
+      <div class="rail-line"></div>
+      <button data-stage="3" aria-label="Fase 4: downwash" title="La velocità indotta"><span>04</span><small>Downwash</small></button>
+      <div class="rail-line"></div>
+      <button data-stage="4" aria-label="Fase 5: resistenza indotta" title="La resistenza indotta"><span>05</span><small>Resistenza</small></button>
+      <button class="rail-info" id="model-open" aria-label="Ipotesi e fonti"><svg class="icon"><use href="#i-info"/></svg></button>
+    </nav>
+    <section class="visual-column" aria-label="Laboratorio 3D">
+      <div class="stage" id="stage">
+        <div id="scene" role="img" aria-label="Ala tridimensionale con traccianti animati della scia vorticosa. Trascina per ruotare, usa la rotella per avvicinarti."></div>
+        <div class="scene-vignette"></div>
+        <div class="scene-heading">
+          <div class="eyebrow"><span class="live-dot"></span> FLUIDODINAMICA · ESPERIENZA 3D</div>
+          <h1>La forma invisibile <br>della <em>portanza.</em></h1>
+          <p>Un’ala. Due vortici. Una forza da scoprire.</p>
+          <button class="start-tour" id="start-tour">Segui il percorso <svg class="icon"><use href="#i-arrow"/></svg></button>
+        </div>
+        <div class="scene-tools"><button class="icon-button" id="reset-camera" title="Ripristina la vista" aria-label="Ripristina la vista"><svg class="icon"><use href="#i-reset"/></svg></button><button class="icon-button" id="fullscreen" title="Schermo intero" aria-label="Schermo intero"><svg class="icon"><use href="#i-expand"/></svg></button></div>
+        <div class="scene-labels" id="scene-labels" aria-hidden="true"></div>
+        <div class="scene-legend" id="scene-legend"><span><i class="cyan"></i>Semiala sinistra</span><span><i class="amber"></i>Semiala destra</span><small>Colori della scia = semiali,<br>non pressione.</small></div>
+        <div class="view-selector" role="group" aria-label="Punto di vista"><button data-view="perspective" class="active" aria-pressed="true">3D</button><button data-view="rear" aria-pressed="false">Da poppa</button><button data-view="side" aria-pressed="false">Di lato</button><button data-view="top" aria-pressed="false">Dall’alto</button></div>
+        <div class="interaction-hint">Trascina per ruotare <span>·</span> Scorri per ingrandire</div>
+        <div class="loading-state" id="loading-state"><div class="loading-ring"></div><span>Preparazione della galleria del vento…</span></div>
+        <div class="error-state" id="error-state" hidden><h2>La vista 3D non è disponibile</h2><p>Per esplorare l’ala serve un browser con WebGL 2 e accelerazione grafica attiva. I valori e i diagrammi restano utilizzabili.</p><button id="fallback-diagram">Apri il diagramma delle forze</button></div>
+      </div>
+      <div class="narrative" id="narrative">
+        <div class="narrative-index"><span id="phase-number">03</span><small>/ 05</small></div>
+        <div class="narrative-text" aria-live="polite"><div class="eyebrow" id="phase-tag">LA SCIA PRENDE FORMA</div><h2 id="phase-title">Due vortici, una sola origine.</h2><p id="phase-text"></p><div class="phase-insight" id="phase-insight"></div></div>
+        <button class="next-phase" id="next-phase" aria-label="Fase successiva"><svg class="icon"><use href="#i-arrow"/></svg></button>
+      </div>
+      <div class="transport">
+        <button class="play-button" id="play-toggle" aria-label="Metti in pausa l’animazione"><svg class="icon"><use href="#i-pause"/></svg></button>
+        <div class="transport-status"><span id="play-status">Flusso in movimento</span><small>Animazione dei traccianti</small></div>
+        <div class="speed-control" role="group" aria-label="Velocità dell’animazione"><button data-playback="0.5" aria-pressed="false">½×</button><button data-playback="1" class="active" aria-pressed="true">1×</button><button data-playback="2" aria-pressed="false">2×</button></div>
+      </div>
+      <div class="metrics" aria-label="Valori calcolati dal modello">
+        <div><span>COEFFICIENTE DI PORTANZA</span><strong id="metric-cl">0,526</strong><small>C<sub>L</sub></small></div>
+        <div><span>DOWNWASH ALL’ALA</span><strong id="metric-w">1,05</strong><small>m/s</small></div>
+        <div><span>ANGOLO INDOTTO</span><strong id="metric-ai">1,20</strong><small>°</small></div>
+        <div class="highlight-metric"><span>RESISTENZA INDOTTA</span><strong id="metric-drag">270</strong><small>N</small></div>
+      </div>
+    </section>
+    <aside class="controls-panel" id="controls-panel" aria-label="Controlli del laboratorio">
+      <div class="panel-heading"><span>Esplora il fenomeno</span><svg class="icon"><use href="#i-sliders"/></svg></div>
+      <section class="conditions">
+        <div class="section-caption">CONDIZIONI DI VOLO <span>01</span></div>
+        <div class="slider-control"><label for="alpha">Incidenza geometrica <i>α</i></label><output for="alpha" id="alpha-value">6,0<small>°</small></output><input type="range" id="alpha" min="0" max="10" value="6" step="0.1"><div class="range-ends"><span>0°</span><span>10°</span></div></div>
+        <div class="slider-control"><label for="ar">Allungamento alare <i>AR</i></label><output for="ar" id="ar-value">8,0</output><input type="range" id="ar" min="4" max="16" value="8" step="0.1"><div class="range-ends"><span>Ala corta</span><span>Ala allungata</span></div></div>
+        <div class="slider-control"><label for="speed">Velocità del flusso <i>V<sub>∞</sub></i></label><output for="speed" id="speed-value">50<small>m/s</small></output><input type="range" id="speed" min="30" max="80" value="50" step="1"><div class="range-ends"><span>30 m/s</span><span>80 m/s</span></div></div>
+        <p class="control-note">Variazioni a incidenza fissata.<br>Superficie alare costante: <strong>16 m²</strong>.</p>
+      </section>
+      <section class="layers-section"><div class="section-caption">COSA VUOI VEDERE <span>02</span></div>
+        <label class="switch-row"><span><i class="layer-dot cyan"></i>Traccianti del flusso</span><input type="checkbox" id="layer-particles" checked role="switch"><span class="switch-track"></span></label>
+        <label class="switch-row"><span><i class="layer-dot muted"></i>Superficie vorticosa</span><input type="checkbox" id="layer-sheet" checked role="switch"><span class="switch-track"></span></label>
+        <label class="switch-row"><span><i class="layer-dot pressure"></i>Pressione sull’ala</span><input type="checkbox" id="layer-pressure" role="switch"><span class="switch-track"></span></label>
+        <label class="switch-row pressure-label-switch" title="Mostra o nasconde i richiami di dorso e ventre nella scena 3D"><span><i class="layer-dot muted"></i>Etichette pressione</span><input type="checkbox" id="layer-pressureLabels" checked role="switch"><span class="switch-track"></span></label>
+        <label class="switch-row"><span><i class="layer-dot cyan"></i>Velocità indotta</span><input type="checkbox" id="layer-vectors" role="switch"><span class="switch-track"></span></label>
+        <label class="switch-row"><span><i class="layer-dot amber"></i>Forze aerodinamiche</span><input type="checkbox" id="layer-forces" role="switch"><span class="switch-track"></span></label>
+        <section class="pressure-guide" id="pressure-legend" aria-label="Pressione sul dorso e sul ventre dell’ala" hidden>
+          <div class="pressure-guide-heading">LE DUE SUPERFICI <span>SEZIONE</span></div>
+          <svg class="pressure-profile" viewBox="0 0 240 66" aria-hidden="true">
+            <path class="pressure-profile-fill pressure-low" d="M20.00,33.00 L20.21,31.85 L20.86,30.74 L21.92,29.66 L23.41,28.62 L25.31,27.63 L27.61,26.68 L30.31,25.80 L33.40,24.97 L36.85,24.21 L40.66,23.52 L44.82,22.91 L49.29,22.38 L54.07,21.94 L59.12,21.58 L64.44,21.30 L70.00,21.12 L75.77,21.02 L81.73,21.00 L87.86,21.07 L94.12,21.21 L100.49,21.42 L106.95,21.70 L113.46,22.04 L120.00,22.43 L126.54,22.87 L133.05,23.35 L139.51,23.87 L145.88,24.41 L152.14,24.98 L158.27,25.56 L164.23,26.16 L170.00,26.76 L175.56,27.36 L180.88,27.96 L185.93,28.54 L190.71,29.11 L195.18,29.66 L199.34,30.18 L203.15,30.68 L206.60,31.13 L209.69,31.55 L212.39,31.92 L214.69,32.24 L216.59,32.51 L218.08,32.72 L219.14,32.88 L219.79,32.97 L220.00,33.00 L20,33Z"/>
+            <path class="pressure-profile-fill pressure-high" d="M20.00,33.00 L20.21,34.15 L20.86,35.26 L21.92,36.34 L23.41,37.38 L25.31,38.37 L27.61,39.32 L30.31,40.20 L33.40,41.03 L36.85,41.79 L40.66,42.48 L44.82,43.09 L49.29,43.62 L54.07,44.06 L59.12,44.42 L64.44,44.70 L70.00,44.88 L75.77,44.98 L81.73,45.00 L87.86,44.93 L94.12,44.79 L100.49,44.58 L106.95,44.30 L113.46,43.96 L120.00,43.57 L126.54,43.13 L133.05,42.65 L139.51,42.13 L145.88,41.59 L152.14,41.02 L158.27,40.44 L164.23,39.84 L170.00,39.24 L175.56,38.64 L180.88,38.04 L185.93,37.46 L190.71,36.89 L195.18,36.34 L199.34,35.82 L203.15,35.32 L206.60,34.87 L209.69,34.45 L212.39,34.08 L214.69,33.76 L216.59,33.49 L218.08,33.28 L219.14,33.12 L219.79,33.03 L220.00,33.00 L20,33Z"/>
+            <path class="pressure-profile-chord" d="M20,33H220"/>
+            <path class="pressure-profile-surface pressure-low" d="M20.00,33.00 L20.21,31.85 L20.86,30.74 L21.92,29.66 L23.41,28.62 L25.31,27.63 L27.61,26.68 L30.31,25.80 L33.40,24.97 L36.85,24.21 L40.66,23.52 L44.82,22.91 L49.29,22.38 L54.07,21.94 L59.12,21.58 L64.44,21.30 L70.00,21.12 L75.77,21.02 L81.73,21.00 L87.86,21.07 L94.12,21.21 L100.49,21.42 L106.95,21.70 L113.46,22.04 L120.00,22.43 L126.54,22.87 L133.05,23.35 L139.51,23.87 L145.88,24.41 L152.14,24.98 L158.27,25.56 L164.23,26.16 L170.00,26.76 L175.56,27.36 L180.88,27.96 L185.93,28.54 L190.71,29.11 L195.18,29.66 L199.34,30.18 L203.15,30.68 L206.60,31.13 L209.69,31.55 L212.39,31.92 L214.69,32.24 L216.59,32.51 L218.08,32.72 L219.14,32.88 L219.79,32.97 L220.00,33.00"/>
+            <path class="pressure-profile-surface pressure-high" d="M20.00,33.00 L20.21,34.15 L20.86,35.26 L21.92,36.34 L23.41,37.38 L25.31,38.37 L27.61,39.32 L30.31,40.20 L33.40,41.03 L36.85,41.79 L40.66,42.48 L44.82,43.09 L49.29,43.62 L54.07,44.06 L59.12,44.42 L64.44,44.70 L70.00,44.88 L75.77,44.98 L81.73,45.00 L87.86,44.93 L94.12,44.79 L100.49,44.58 L106.95,44.30 L113.46,43.96 L120.00,43.57 L126.54,43.13 L133.05,42.65 L139.51,42.13 L145.88,41.59 L152.14,41.02 L158.27,40.44 L164.23,39.84 L170.00,39.24 L175.56,38.64 L180.88,38.04 L185.93,37.46 L190.71,36.89 L195.18,36.34 L199.34,35.82 L203.15,35.32 L206.60,34.87 L209.69,34.45 L212.39,34.08 L214.69,33.76 L216.59,33.49 L218.08,33.28 L219.14,33.12 L219.79,33.03 L220.00,33.00"/>
+            <path class="pressure-profile-pointer pressure-low" d="M90,21.11V10H105"/>
+            <path class="pressure-profile-pointer pressure-high" d="M90,44.89V57H105"/>
+            <text class="pressure-profile-key pressure-low" x="112" y="13">D</text>
+            <text class="pressure-profile-key pressure-high" x="112" y="61">V</text>
+          </svg>
+          <div class="pressure-guide-row pressure-low"><span class="pressure-guide-badge">D</span><div><strong>Dorso · estradosso</strong><span>Pressione mediamente minore</span></div></div>
+          <div class="pressure-guide-row pressure-high"><span class="pressure-guide-badge">V</span><div><strong>Ventre · intradosso</strong><span>Pressione mediamente maggiore</span></div></div>
+          <div class="pressure-guide-views" role="group" aria-label="Superficie da osservare"><button class="pressure-low" data-view="top" aria-pressed="false">Mostra dorso</button><button class="pressure-high" data-view="bottom" aria-pressed="false">Mostra ventre</button></div>
+          <div class="pressure-flow-guide">
+            <div class="pressure-flow-heading"><strong>IL FLUSSO, DA VICINO</strong><span id="pressure-flow-status" class="is-moving">Flusso animato</span></div>
+            <ol class="pressure-flow-steps">
+              <li><span>01</span><div><strong>Sotto, verso l’esterno</strong><small>Il flusso si dirige verso il bordo libero.</small></div></li>
+              <li><span>02</span><div><strong>Dal ventre al dorso</strong><small>Aggira l’estremità verso la pressione minore.</small></div></li>
+              <li><span>03</span><div><strong>Verso l’interno e a valle</strong><small>Prosegue nella scia, che si avvolge.</small></div></li>
+            </ol>
+            <button class="pressure-tip-button" data-view="tip" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#i-cube"/></svg>Osserva l’estremità<svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <p>La scia vorticosa nasce lungo tutto il bordo d’uscita dalla variazione di circolazione lungo l’apertura.</p>
+            <small class="pressure-flow-note">Traccianti qualitativi · moto trasversale amplificato</small>
+          </div>
+          <p>Con portanza positiva · confronto qualitativo.<br>D e V indicano le superfici della stessa sezione, su entrambe le semiali.</p>
+        </section>
+      </section>
+      <section class="formula-section"><div class="formula-title"><span>IL COSTO DELLA PORTANZA</span><button class="mini-info" id="formula-info" aria-label="Spiega la formula"><svg class="icon"><use href="#i-info"/></svg></button></div><div class="hero-formula"><i>C</i><sub>Dᵢ</sub><span>=</span><span class="fraction"><span><i>C</i><sub>L</sub><sup>2</sup></span><span>π · <i>e</i> · AR</span></span></div><div id="polar-chart" class="polar-chart"></div><div class="formula-values"><span>e = 1 <small>carico ellittico</small></span><strong id="cdi-value">0,0110</strong></div><button class="diagram-button" id="forces-open">Dal downwash alla resistenza <svg class="icon"><use href="#i-arrow"/></svg></button></section>
+      <div class="panel-footer"><button id="reset-all"><svg class="icon"><use href="#i-reset"/></svg> Ripristina condizioni</button><button id="quality-toggle" title="Cambia qualità grafica">Qualità <strong id="quality-label">alta</strong></button></div>
+    </aside>
+  </main>
+  <footer class="site-footer"><span>VORTICE / prof. B. Raucci</span><span>Costruzioni aeronautiche · Esplora il flusso, comprendi le forze</span><button id="sources-open">Modello e fonti <svg class="icon inline-arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button></footer>
+  <button class="exit-lesson" id="exit-lesson" hidden><svg class="icon"><use href="#i-close"/></svg> Esci dalla lezione</button>
+  <button class="gesture-lesson-button" id="gesture-lesson" aria-haspopup="dialog" aria-controls="gesture-dialog" aria-label="Gesture: controlla il laboratorio con le mani"><svg class="icon" aria-hidden="true"><use href="#i-hand"/></svg><span>Gesture</span></button>
+  <dialog id="info-dialog" class="info-dialog"><div class="dialog-top"><span id="dialog-eyebrow" class="eyebrow">IL MODELLO AERODINAMICO</span><button class="icon-button" id="dialog-close" aria-label="Chiudi finestra"><svg class="icon"><use href="#i-close"/></svg></button></div><div id="dialog-content"></div></dialog>
+  <dialog id="appearance-dialog" class="appearance-dialog" aria-labelledby="appearance-title">
+    <div class="appearance-heading"><span class="eyebrow">IL TUO LABORATORIO, IL TUO STILE</span><button class="icon-button" id="appearance-close" aria-label="Chiudi impostazioni dell’aspetto"><svg class="icon" aria-hidden="true"><use href="#i-close"/></svg></button></div>
+    <h2 id="appearance-title">Scegli la tua atmosfera.</h2>
+    <p class="appearance-intro">Colori e luminosità, per ogni momento della lezione. Il tema accompagna l’interfaccia, le scene e i diagrammi.</p>
+    <div class="theme-collection" role="radiogroup" aria-label="Aspetto del laboratorio">
+    <p class="theme-group-label">Temi chiari</p>
+    <div class="theme-options">
+      <button class="theme-option" data-theme-choice="ember" role="radio" aria-checked="true" style="--swatch:#B54A2B;--swatch-soft:#F6E9E2"><span class="theme-preview" aria-hidden="true"><span class="theme-preview-lines"></span><span class="theme-preview-dot"></span></span><span class="theme-copy"><strong>Arancione bruciato</strong><small>Caldo, deciso, fuori dagli schemi.</small></span><span class="theme-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span></button>
+      <button class="theme-option" data-theme-choice="forest" role="radio" aria-checked="false" style="--swatch:#24674B;--swatch-soft:#E5EEE5"><span class="theme-preview" aria-hidden="true"><span class="theme-preview-lines"></span><span class="theme-preview-dot"></span></span><span class="theme-copy"><strong>Verde bosco</strong><small>Naturale, essenziale, concentrato.</small></span><span class="theme-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span></button>
+      <button class="theme-option" data-theme-choice="cobalt" role="radio" aria-checked="false" style="--swatch:#2554BF;--swatch-soft:#E8EDF8"><span class="theme-preview" aria-hidden="true"><span class="theme-preview-lines"></span><span class="theme-preview-dot"></span></span><span class="theme-copy"><strong>Blu cobalto</strong><small>Grafico, brillante, preciso.</small></span><span class="theme-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span></button>
+    </div>
+    <p class="theme-group-label">Temi scuri</p>
+    <div class="theme-options theme-options-dark">
+      <button class="theme-option" data-theme-choice="slate" role="radio" aria-checked="false" style="--swatch:#E2A078;--swatch-soft:#43382F;--preview-bg:#222B27;--swatch-ink:#241B15"><span class="theme-preview" aria-hidden="true"><span class="theme-preview-lines"></span><span class="theme-preview-dot"></span></span><span class="theme-copy"><strong>Ardesia</strong><small>Grigio profondo, riflessi di rame.</small></span><span class="theme-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span></button>
+      <button class="theme-option" data-theme-choice="night" role="radio" aria-checked="false" style="--swatch:#C9A46C;--swatch-soft:#29271D;--preview-bg:#090E0C;--swatch-ink:#181B13"><span class="theme-preview" aria-hidden="true"><span class="theme-preview-lines"></span><span class="theme-preview-icon"><svg class="icon"><use href="#i-moon-stars"/></svg></span></span><span class="theme-copy"><strong>Notte</strong><small>Quasi nero, accenti ambrati attenuati.</small></span><span class="theme-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span></button>
+    </div>
+    </div>
+    <p class="appearance-footnote"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>La scelta viene salvata automaticamente in questo browser.</p>
+  </dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script type="module" src="./app.js"></script>
+  <noscript><div class="noscript">Attiva JavaScript per usare il laboratorio 3D.</div></noscript>
+</body>
+</html>
